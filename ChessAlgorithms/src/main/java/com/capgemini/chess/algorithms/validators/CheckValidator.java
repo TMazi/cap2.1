@@ -15,7 +15,7 @@ public class CheckValidator {
 
 	public static boolean isInCheck(Color kingsColor, Piece[][] state) {
 		
-		Coordinate kingsLocation = new Coordinate(0, 0);
+		Coordinate kingsLocation = null;
 		boolean continues = true;
 		int i = 0;
 		while (continues && i < Board.SIZE) {
@@ -30,6 +30,8 @@ public class CheckValidator {
 			}
 			i++;
 		}
+		if(kingsLocation == null)
+			return false;
 		
 		if (isAttackedByPawn(kingsLocation, kingsColor, state))
 			return true;

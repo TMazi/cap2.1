@@ -4,65 +4,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.capgemini.chess.algorithms.data.Coordinate;
+import com.capgemini.chess.algorithms.data.Move;
 import com.capgemini.chess.algorithms.data.enums.Color;
 import com.capgemini.chess.algorithms.data.enums.PieceType;
-import com.capgemini.chess.algorithms.data.generated.Board;
+import com.capgemini.chess.algorithms.implementation.exceptions.InvalidMoveException;
+
+/**
+ * Class being the representation of Queen during the chess game
+ * 
+ * @author TMAZUREK
+ *
+ */
 
 public class Queen implements Piece {
 
 	private final Color color;
 	private final PieceType type = PieceType.QUEEN;
+	private boolean wasMoved;
 
 	public Queen(Color color) {
+		wasMoved = false;
 		this.color = color;
 	}
+
+	/**
+	 * Method used to check, if the possible move is a valid one for Queen, using
+	 * the possibilities of Bishop and Rook
+	 * 
+	 * @param state
+	 *            current state of board
+	 * @param from
+	 *            where the move begins
+	 * @param to
+	 *            destination of move
+	 * @return if the move is correct it return the Move instance, otherwise
+	 *         throws InvalidMoveException
+	 */
+
+	@Override
+	public Move validateMove(Piece[][] state, Coordinate from, Coordinate to) throws InvalidMoveException {
+		Move result;
+
+		if (from.getX() == to.getX() || from.getY() == to.getY()) {
+			Rook rook = new Rook(getColor());
+			result = rook.validateMove(state, from, to);
+		} else {
+			Bishop bishop = new Bishop(getColor());
+			result = bishop.validateMove(state, from, to);
+		}
+		result.setMovedPiece(this);
+
+		return result;
+	}
+	
+	/**
+	 * Method returning every potential possible location for queen
+	 * 
+	 * @param currentLocation
+	 *            location of queen
+	 * @return list of potential possible locations for queen
+	 */
 
 	@Override
 	public List<Coordinate> getPossibleLocations(Coordinate currentLocation) {
 
 		List<Coordinate> possibleCoordinates = new ArrayList<Coordinate>();
 
-		for (int i = 0; i < Board.SIZE; i++) {
-			if (i != currentLocation.getX())
-				possibleCoordinates.add(new Coordinate(i, currentLocation.getY()));
-		}
-		for (int i = 0; i < Board.SIZE; i++) {
-			if (i != currentLocation.getY())
-				possibleCoordinates.add(new Coordinate(currentLocation.getX(), i));
-		}
-
-		int x = currentLocation.getX();
-		int y = currentLocation.getY();
-		while (x > 0 && y > 0) {
-			x--;
-			y--;
-			possibleCoordinates.add(new Coordinate(x, y));
-		}
-		x = currentLocation.getX();
-		y = currentLocation.getY();
-
-		while (x < Board.SIZE - 1 && y < Board.SIZE - 1) {
-			x++;
-			y++;
-			possibleCoordinates.add(new Coordinate(x, y));
-		}
-
-		x = currentLocation.getX();
-		y = currentLocation.getY();
-
-		while (x > 0 && y < Board.SIZE - 1) {
-			x--;
-			y++;
-			possibleCoordinates.add(new Coordinate(x, y));
-		}
-
-		x = currentLocation.getX();
-		y = currentLocation.getY();
-		while (x < Board.SIZE - 1 && y > 0) {
-			x++;
-			y--;
-			possibleCoordinates.add(new Coordinate(x, y));
-		}
+		Rook rook = new Rook(getColor());
+		possibleCoordinates.addAll(rook.getPossibleLocations(currentLocation));
+		Bishop bishop = new Bishop(getColor());
+		possibleCoordinates.addAll(bishop.getPossibleLocations(currentLocation));
 
 		return possibleCoordinates;
 	}
@@ -75,6 +86,16 @@ public class Queen implements Piece {
 	@Override
 	public PieceType getType() {
 		return type;
+	}
+
+	@Override
+	public void setMoved() {
+		wasMoved = true;
+	}
+
+	@Override
+	public boolean wasMoved() {
+		return wasMoved;
 	}
 
 	@Override

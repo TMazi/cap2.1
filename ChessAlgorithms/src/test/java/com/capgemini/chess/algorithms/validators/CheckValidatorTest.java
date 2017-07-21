@@ -1,13 +1,18 @@
 package com.capgemini.chess.algorithms.validators;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import com.capgemini.chess.algorithms.data.Coordinate;
 import com.capgemini.chess.algorithms.data.enums.Color;
 import com.capgemini.chess.algorithms.data.generated.Board;
 import com.capgemini.chess.algorithms.data.pieces.*;
+
+/**
+ * Test class for testing ({@link CheckValidator}
+ * @author TMAZUREK
+ *
+ */
 
 public class CheckValidatorTest {
 

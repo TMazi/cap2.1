@@ -866,13 +866,64 @@ public class BoardManagerTest {
 		board.setPieceAt(new Rook(Color.BLACK), new Coordinate(7, 7));
 		BoardManager boardManager = new BoardManager(board);
 		boardManager.performMove(new Coordinate(2, 2), new Coordinate(3, 3));
-		boardManager.performMove(new Coordinate(7,7), new Coordinate(7,6));
+		boardManager.performMove(new Coordinate(7, 7), new Coordinate(7, 6));
 		boardManager.performMove(new Coordinate(3, 3), new Coordinate(2, 2));
-		boardManager.performMove(new Coordinate(7,6), new Coordinate(7,7));
+		boardManager.performMove(new Coordinate(7, 6), new Coordinate(7, 7));
 
 		// when
 		boardManager.performMove(new Coordinate(4, 7), new Coordinate(6, 7));
 
+	}
+
+	@Test
+	public void testIfQueenWillBeCountedAsPossibleMove() {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Queen(Color.WHITE), new Coordinate(2, 2));
+		board.setPieceAt(new King(Color.WHITE), new Coordinate(3, 3));
+
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		BoardState boardState = boardManager.updateBoardState();
+
+		// then
+		assertEquals(BoardState.REGULAR, boardState);
+	}
+
+	@Test
+	public void testPossibleEnPassantForWhitePawn() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(2, 4));
+		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(3, 6));
+		board.setPieceAt(new Rook(Color.WHITE), new Coordinate(0,0));
+
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		boardManager.performMove(new Coordinate(0,0), new Coordinate(1,0));
+		boardManager.performMove(new Coordinate(3,6), new Coordinate(3,4));
+		Move move = boardManager.performMove(new Coordinate(2,4), new Coordinate(3,5));
+
+		// then
+		assertEquals(MoveType.EN_PASSANT, move.getType());
+		assertEquals(null, board.getPieceAt(new Coordinate(3,4)));
+	}
+	
+	@Test
+	public void testPossibleEnPassantForBlackPawn() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(2, 1));
+		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(3, 3));
+
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		boardManager.performMove(new Coordinate(2,1), new Coordinate(2,3));
+		Move move = boardManager.performMove(new Coordinate(3,3), new Coordinate(2,2));
+
+		// then
+		assertEquals(MoveType.EN_PASSANT, move.getType());
+		assertEquals(null, board.getPieceAt(new Coordinate(2,3)));
 	}
 
 	private Move createDummyMove(Board board) {

@@ -15,7 +15,6 @@ import com.capgemini.chess.algorithms.data.pieces.*;
 import com.capgemini.chess.algorithms.implementation.exceptions.InvalidMoveException;
 import com.capgemini.chess.algorithms.implementation.exceptions.KingInCheckException;
 import com.capgemini.chess.algorithms.validators.CheckValidator;
-import com.capgemini.chess.algorithms.validators.MoveValidator;
 
 /**
  * Class for managing of basic operations on the Chess Board.
@@ -68,6 +67,7 @@ public class BoardManager {
 		Move move = validateMove(from, to);
 
 		addMove(move);
+		board.getPieceAt(to).setMoved();
 
 		return move;
 	}
@@ -239,27 +239,16 @@ public class BoardManager {
 	private Move validateMove(Coordinate from, Coordinate to) throws InvalidMoveException, KingInCheckException {
 
 		Piece[][] state = board.getPieces();
-		List<Coordinate> potentialCoordinates;
 
 		isFromOutOfBoard(from);
 		isThereIncorrectPieceOnFrom(from);
 
 		Piece piece = state[from.getX()][from.getY()];
-
-		if (piece.getType() == PieceType.PAWN) {
-			potentialCoordinates = getPawnPossibleMoves(from);
-		} else if (piece.getType() == PieceType.KING)
-			potentialCoordinates = getKingPossilbeMoves(from);
-		else
-			potentialCoordinates = piece.getPossibleLocations(from);
-
-		if (!potentialCoordinates.contains(to))
-			throw new InvalidMoveException();
-
-		Move result = MoveValidator.moveValidate(piece, state, from, to);
-		if (result == null) {
-			throw new InvalidMoveException();
-		}
+		
+		Move result = piece.validateMove(state, from, to);
+		
+		if(result.getType() == MoveType.EN_PASSANT)
+			checkIfEnPassantIsPossible();
 
 		if (willBeCheckedAfterMove(from, to)) {
 			throw new KingInCheckException();
@@ -285,6 +274,12 @@ public class BoardManager {
 		Piece[][] state = board.getPieces();
 		return CheckValidator.isInCheck(kingColor, state);
 	}
+	
+	private void checkIfEnPassantIsPossible() throws InvalidMoveException {
+		int historySize = board.getMoveHistory().size();
+		if(historySize < 1 || board.getMoveHistory().get(historySize-1).getMovedPiece().getType() != PieceType.PAWN)
+			throw new InvalidMoveException();
+	}
 
 	private boolean isAnyMoveValid(Color nextMoveColor) {
 
@@ -294,12 +289,7 @@ public class BoardManager {
 				Piece piece = board.getPieceAt(temp);
 				if (piece != null && piece.getColor() == nextMoveColor) {
 					List<Coordinate> potentialCoordinates = new ArrayList<>();
-					if (piece.getType() == PieceType.PAWN) {
-						potentialCoordinates = getPawnPossibleMoves(temp);
-					} else if (piece.getType() == PieceType.KING)
-						potentialCoordinates = getKingPossilbeMoves(temp);
-					else
-						potentialCoordinates = piece.getPossibleLocations(temp);
+					potentialCoordinates = piece.getPossibleLocations(temp);
 					for (int x = 0; x < potentialCoordinates.size(); x++) {
 						try {
 							validateMove(temp, potentialCoordinates.get(x));
@@ -314,121 +304,6 @@ public class BoardManager {
 			}
 		}
 		return false;
-	}
-
-	// TODO ulepsze enPassant i castling
-	// ZMIANA NAZW METOD!!
-
-	private List<Coordinate> getPawnPossibleMoves(Coordinate from) {
-
-		Piece temp = board.getPieceAt(from);
-		List<Coordinate> result = temp.getPossibleLocations(from);
-		int yMove;
-		if (temp.getColor() == Color.BLACK)
-			yMove = from.getY() - 1;
-		else
-			yMove = from.getY() + 1;
-
-		List<Move> moves = board.getMoveHistory();
-		int last = moves.size() - 1;
-		if (moves.size() > 0 && moves.get(last).getMovedPiece().getType() == PieceType.PAWN
-				&& moves.get(last).getTo().getY() == from.getY()
-				&& Math.abs(moves.get(last).getTo().getY() - moves.get(last).getFrom().getY()) == 2) {
-			Move lastMove = moves.get(last);
-			if (lastMove.getTo().getX() == from.getX() + 1) {
-				result.remove(new Coordinate(from.getX() - 1, yMove));
-			} else if (lastMove.getTo().getX() == from.getX() - 1) {
-				result.remove(new Coordinate(from.getX() + 1, yMove));
-			}
-		} else {
-			result.remove(new Coordinate(from.getX() + 1, yMove));
-			result.remove(new Coordinate(from.getX() - 1, yMove));
-		}
-		return result;
-	}
-
-	private List<Coordinate> getKingPossilbeMoves(Coordinate from) {
-		Piece temp = board.getPieceAt(from);
-		List<Coordinate> temporaryList = temp.getPossibleLocations(from);
-		if (temp.getColor() == Color.BLACK)
-			return isCastlingForBlackKingPossible(from, temporaryList);
-		else
-			return isCastlingForWhiteKingPossible(from, temporaryList);
-	}
-
-	private List<Coordinate> isCastlingForBlackKingPossible(Coordinate from, List<Coordinate> temporaryList) {
-
-		List<Coordinate> result = temporaryList;
-		Coordinate kingLocation = new Coordinate(4,7);
-		if (from.equals(kingLocation)) {
-			if (board.getPieceAt(new Coordinate(5, 7)) != null || board.getPieceAt(new Coordinate(6, 7)) != null)
-				result.remove(new Coordinate(6, 7));
-			if (board.getPieceAt(new Coordinate(1, 7)) != null || board.getPieceAt(new Coordinate(2, 7)) != null
-					|| board.getPieceAt(new Coordinate(3, 7)) != null)
-				result.remove(new Coordinate(2, 7));
-			List<Move> history = board.getMoveHistory();
-			for (int i = 0; i < board.getMoveHistory().size(); i++) {
-				Move move = history.get(i);
-				Piece temp = move.getMovedPiece();
-				if (temp.getType() == PieceType.KING && temp.getColor() == Color.BLACK) {
-					result.remove(new Coordinate(2, 7));
-					result.remove(new Coordinate(6, 7));
-					return result;
-				}
-				if (temp.getType() == PieceType.ROOK && temp.getColor() == Color.BLACK) {
-					if (move.getFrom().equals(new Coordinate(0, 7)))
-						result.remove(new Coordinate(2, 7));
-					if (move.getFrom().equals(new Coordinate(7, 7)))
-						result.remove(new Coordinate(6, 7));
-				}
-			}
-			if (willBeCheckedAfterMove(kingLocation, new Coordinate(5, 7)))
-				result.remove(new Coordinate(6, 7));
-			if (willBeCheckedAfterMove(kingLocation, new Coordinate(3, 7)))
-				result.remove(new Coordinate(2, 7));
-
-		} else {
-			result.remove(new Coordinate(2, 7));
-			result.remove(new Coordinate(6, 7));
-		}
-		return result;
-	}
-
-	private List<Coordinate> isCastlingForWhiteKingPossible(Coordinate from, List<Coordinate> temporaryList) {
-
-		List<Coordinate> result = temporaryList;
-		Coordinate kingLocation = new Coordinate(4,0);
-		if (from.equals(kingLocation)) {
-			if (board.getPieceAt(new Coordinate(5, 0)) != null || board.getPieceAt(new Coordinate(6, 0)) != null)
-				result.remove(new Coordinate(6, 0));
-			if (board.getPieceAt(new Coordinate(1, 0)) != null || board.getPieceAt(new Coordinate(2, 0)) != null
-					|| board.getPieceAt(new Coordinate(3, 0)) != null)
-				result.remove(new Coordinate(2, 0));
-			List<Move> history = board.getMoveHistory();
-			for (int i = 0; i < board.getMoveHistory().size(); i++) {
-				Move move = history.get(i);
-				Piece temp = move.getMovedPiece();
-				if (temp.getType() == PieceType.KING && temp.getColor() == Color.WHITE) {
-					result.remove(new Coordinate(2, 0));
-					result.remove(new Coordinate(6, 0));
-					return result;
-				}
-				if (temp.getType() == PieceType.ROOK && temp.getColor() == Color.WHITE) {
-					if (move.getFrom().equals(new Coordinate(0, 0)))
-						result.remove(new Coordinate(2, 0));
-					if (move.getFrom().equals(new Coordinate(7, 0)))
-						result.remove(new Coordinate(6, 0));
-				}
-			}
-			if (willBeCheckedAfterMove(kingLocation, new Coordinate(5, 0)))
-				result.remove(new Coordinate(6, 0));
-			if (willBeCheckedAfterMove(kingLocation, new Coordinate(3, 0)))
-				result.remove(new Coordinate(2, 0));
-		} else {
-			result.remove(new Coordinate(2, 0));
-			result.remove(new Coordinate(6, 0));
-		}
-		return result;
 	}
 
 	private boolean willBeCheckedAfterMove(Coordinate from, Coordinate to) {

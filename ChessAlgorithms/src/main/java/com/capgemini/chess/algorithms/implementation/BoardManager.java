@@ -244,10 +244,10 @@ public class BoardManager {
 		isThereIncorrectPieceOnFrom(from);
 
 		Piece piece = state[from.getX()][from.getY()];
-		
+
 		Move result = piece.validateMove(state, from, to);
-		
-		if(result.getType() == MoveType.EN_PASSANT)
+
+		if (result.getType() == MoveType.EN_PASSANT)
 			checkIfEnPassantIsPossible();
 
 		if (willBeCheckedAfterMove(from, to)) {
@@ -274,10 +274,12 @@ public class BoardManager {
 		Piece[][] state = board.getPieces();
 		return CheckValidator.isInCheck(kingColor, state);
 	}
-	
+
 	private void checkIfEnPassantIsPossible() throws InvalidMoveException {
 		int historySize = board.getMoveHistory().size();
-		if(historySize < 1 || board.getMoveHistory().get(historySize-1).getMovedPiece().getType() != PieceType.PAWN)
+		if (historySize < 1 || board.getMoveHistory().get(historySize - 1).getMovedPiece().getType() != PieceType.PAWN
+				|| Math.abs(board.getMoveHistory().get(historySize - 1).getFrom().getY()
+						- board.getMoveHistory().get(historySize - 1).getTo().getY()) != 2)
 			throw new InvalidMoveException();
 	}
 

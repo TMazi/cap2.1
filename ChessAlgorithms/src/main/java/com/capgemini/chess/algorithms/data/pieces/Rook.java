@@ -20,17 +20,17 @@ public class Rook implements Piece {
 	public List<Coordinate> getPossibleLocations(Coordinate currentLocation) {
 		List<Coordinate> possibleCoordinats = new ArrayList<Coordinate>();
 
-		for(int i = 0; i < Board.SIZE; i++) {
-			if(i != currentLocation.getX())
+		for (int i = 0; i < Board.SIZE; i++) {
+			if (i != currentLocation.getX())
 				possibleCoordinats.add(new Coordinate(i, currentLocation.getY()));
 		}
-		for(int i = 0; i < Board.SIZE; i++) {
-			if(i != currentLocation.getY())
+		for (int i = 0; i < Board.SIZE; i++) {
+			if (i != currentLocation.getY())
 				possibleCoordinats.add(new Coordinate(currentLocation.getX(), i));
 		}
-		
+
 		return possibleCoordinats;
-				
+
 	}
 
 	@Override
@@ -46,13 +46,13 @@ public class Rook implements Piece {
 	@Override
 	public boolean equals(Object second) {
 		if (second == this) {
-	        return true;
-	    }
-	    if (second == null || second.getClass() != getClass()) {
-	        return false;
-	    }
-		if(getType() == ((Rook) second).getType())
-			if(getColor() == ((Rook) second).getColor())
+			return true;
+		}
+		if (second == null || second.getClass() != getClass()) {
+			return false;
+		}
+		if (getType() == ((Rook) second).getType())
+			if (getColor() == ((Rook) second).getColor())
 				return true;
 		return false;
 	}

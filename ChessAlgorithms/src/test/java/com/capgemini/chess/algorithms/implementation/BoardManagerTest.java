@@ -271,7 +271,6 @@ public class BoardManagerTest {
 		assertEquals(new King(Color.WHITE), move.getMovedPiece());
 	}
 
-
 	@Test
 	public void testPerformMoveEnPassant() throws InvalidMoveException {
 		// given
@@ -837,6 +836,43 @@ public class BoardManagerTest {
 
 		// then
 		assertFalse(areFiftyMoves);
+	}
+
+	@Test
+	public void testBlackKingCastlingIsPossible() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(2, 2));
+		board.setPieceAt(new King(Color.BLACK), new Coordinate(4, 7));
+		board.setPieceAt(new Rook(Color.BLACK), new Coordinate(7, 7));
+
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		boardManager.performMove(new Coordinate(2, 2), new Coordinate(3, 3));
+		Move move = boardManager.performMove(new Coordinate(4, 7), new Coordinate(6, 7));
+
+		// then
+		assertEquals(MoveType.CASTLING, move.getType());
+		assertEquals(new King(Color.BLACK), move.getMovedPiece());
+
+	}
+
+	@Test(expected = InvalidMoveException.class)
+	public void testBlackKingCastlingImpossibleMovedRook() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(2, 2));
+		board.setPieceAt(new King(Color.BLACK), new Coordinate(4, 7));
+		board.setPieceAt(new Rook(Color.BLACK), new Coordinate(7, 7));
+		BoardManager boardManager = new BoardManager(board);
+		boardManager.performMove(new Coordinate(2, 2), new Coordinate(3, 3));
+		boardManager.performMove(new Coordinate(7,7), new Coordinate(7,6));
+		boardManager.performMove(new Coordinate(3, 3), new Coordinate(2, 2));
+		boardManager.performMove(new Coordinate(7,6), new Coordinate(7,7));
+
+		// when
+		boardManager.performMove(new Coordinate(4, 7), new Coordinate(6, 7));
+
 	}
 
 	private Move createDummyMove(Board board) {

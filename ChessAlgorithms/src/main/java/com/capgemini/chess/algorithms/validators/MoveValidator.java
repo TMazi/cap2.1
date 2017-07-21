@@ -7,6 +7,8 @@ import com.capgemini.chess.algorithms.data.enums.MoveType;
 import com.capgemini.chess.algorithms.data.pieces.*;
 
 public class MoveValidator {
+	
+	//TODO Zamiana validatora na walidacje w figurach
 
 	public static Move moveValidate(Piece piece, Piece[][] state, Coordinate from, Coordinate to) {
 		switch (piece.getType()) {

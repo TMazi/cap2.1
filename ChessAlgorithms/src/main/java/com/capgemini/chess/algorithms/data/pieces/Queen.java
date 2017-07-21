@@ -22,15 +22,15 @@ public class Queen implements Piece {
 
 		List<Coordinate> possibleCoordinates = new ArrayList<Coordinate>();
 
-		for(int i = 0; i < Board.SIZE; i++) {
-			if(i != currentLocation.getX())
+		for (int i = 0; i < Board.SIZE; i++) {
+			if (i != currentLocation.getX())
 				possibleCoordinates.add(new Coordinate(i, currentLocation.getY()));
 		}
-		for(int i = 0; i < Board.SIZE; i++) {
-			if(i != currentLocation.getY())
+		for (int i = 0; i < Board.SIZE; i++) {
+			if (i != currentLocation.getY())
 				possibleCoordinates.add(new Coordinate(currentLocation.getX(), i));
 		}
-		
+
 		int x = currentLocation.getX();
 		int y = currentLocation.getY();
 		while (x > 0 && y > 0) {
@@ -40,30 +40,30 @@ public class Queen implements Piece {
 		}
 		x = currentLocation.getX();
 		y = currentLocation.getY();
-		
+
 		while (x < Board.SIZE - 1 && y < Board.SIZE - 1) {
 			x++;
 			y++;
 			possibleCoordinates.add(new Coordinate(x, y));
 		}
-		
+
 		x = currentLocation.getX();
 		y = currentLocation.getY();
-		
-		while(x > 0 && y < Board.SIZE-1) {
+
+		while (x > 0 && y < Board.SIZE - 1) {
 			x--;
 			y++;
-			possibleCoordinates.add(new Coordinate(x,y));
+			possibleCoordinates.add(new Coordinate(x, y));
 		}
-		
+
 		x = currentLocation.getX();
 		y = currentLocation.getY();
-		while(x < Board.SIZE-1 && y > 0) {
+		while (x < Board.SIZE - 1 && y > 0) {
 			x++;
 			y--;
-			possibleCoordinates.add(new Coordinate(x,y));
+			possibleCoordinates.add(new Coordinate(x, y));
 		}
-		
+
 		return possibleCoordinates;
 	}
 
@@ -76,17 +76,17 @@ public class Queen implements Piece {
 	public PieceType getType() {
 		return type;
 	}
-	
+
 	@Override
 	public boolean equals(Object second) {
 		if (second == this) {
-	        return true;
-	    }
-	    if (second == null || second.getClass() != getClass()) {
-	        return false;
-	    }
-		if(getType() == ((Queen) second).getType())
-			if(getColor() == ((Queen) second).getColor())
+			return true;
+		}
+		if (second == null || second.getClass() != getClass()) {
+			return false;
+		}
+		if (getType() == ((Queen) second).getType())
+			if (getColor() == ((Queen) second).getColor())
 				return true;
 		return false;
 	}

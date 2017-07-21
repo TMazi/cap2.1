@@ -30,28 +30,28 @@ public class Bishop implements Piece {
 		}
 		x = currentLocation.getX();
 		y = currentLocation.getY();
-		
+
 		while (x < Board.SIZE - 1 && y < Board.SIZE - 1) {
 			x++;
 			y++;
 			possibleCoordinates.add(new Coordinate(x, y));
 		}
-		
+
 		x = currentLocation.getX();
 		y = currentLocation.getY();
-		
-		while(x > 0 && y < Board.SIZE-1) {
+
+		while (x > 0 && y < Board.SIZE - 1) {
 			x--;
 			y++;
-			possibleCoordinates.add(new Coordinate(x,y));
+			possibleCoordinates.add(new Coordinate(x, y));
 		}
-		
+
 		x = currentLocation.getX();
 		y = currentLocation.getY();
-		while(x < Board.SIZE-1 && y > 0) {
+		while (x < Board.SIZE - 1 && y > 0) {
 			x++;
 			y--;
-			possibleCoordinates.add(new Coordinate(x,y));
+			possibleCoordinates.add(new Coordinate(x, y));
 		}
 		return possibleCoordinates;
 	}
@@ -65,17 +65,17 @@ public class Bishop implements Piece {
 	public PieceType getType() {
 		return type;
 	}
-	
+
 	@Override
 	public boolean equals(Object second) {
 		if (second == this) {
-	        return true;
-	    }
-	    if (second == null || second.getClass() != getClass()) {
-	        return false;
-	    }
-		if(getType() == ((Bishop) second).getType())
-			if(getColor() == ((Bishop) second).getColor())
+			return true;
+		}
+		if (second == null || second.getClass() != getClass()) {
+			return false;
+		}
+		if (getType() == ((Bishop) second).getType())
+			if (getColor() == ((Bishop) second).getColor())
 				return true;
 		return false;
 	}

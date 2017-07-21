@@ -19,7 +19,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Rook(Color.BLACK), new Coordinate(1, 0));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.WHITE, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.WHITE, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -33,7 +33,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Rook(Color.BLACK), new Coordinate(7, 0));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.WHITE, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.WHITE, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -47,7 +47,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Queen(Color.WHITE), new Coordinate(4, 5));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -61,7 +61,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Queen(Color.WHITE), new Coordinate(4, 3));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 5), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -75,7 +75,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(2, 5));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 7), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -89,7 +89,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(6, 5));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 7), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -103,7 +103,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(2, 2));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -117,7 +117,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(6, 2));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -131,12 +131,12 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Knight(Color.WHITE), new Coordinate(2, 1));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
 	}
-	
+
 	@Test
 	public void shouldBeCheckedAttackedByPawn() {
 		// given
@@ -145,7 +145,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(3, 6));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 7), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertTrue(result);
@@ -160,7 +160,7 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(3, 0));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 0), Color.WHITE, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.WHITE, board.getPieces());
 
 		// then
 		assertFalse(result);
@@ -175,11 +175,39 @@ public class CheckValidatorTest {
 		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(3, 6));
 
 		// when
-		boolean result = CheckValidator.isInCheck(new Coordinate(4, 7), Color.BLACK, board.getPieces());
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
 
 		// then
 		assertFalse(result);
 	}
-	
+
+	@Test
+	public void shouldBlackKingBeCheckedFromPawn() {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new King(Color.BLACK), new Coordinate(4, 7));
+		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(3, 6));
+
+		// when
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
+
+		// then
+		assertTrue(result);
+
+	}
+
+	@Test
+	public void shouldWhiteKingBeCheckedFromPawn() {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new King(Color.BLACK), new Coordinate(4, 0));
+		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(3, 1));
+
+		// when
+		boolean result = CheckValidator.isInCheck(Color.BLACK, board.getPieces());
+
+		// then
+		assertTrue(result);
+	}
 
 }

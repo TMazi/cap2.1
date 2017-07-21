@@ -40,16 +40,16 @@ public class King implements Piece {
 
 	private List<Coordinate> getWhiteCastle() {
 		List<Coordinate> result = new ArrayList<>();
-		result.add(new Coordinate(2,0));
-		result.add(new Coordinate(6,0));
+		result.add(new Coordinate(2, 0));
+		result.add(new Coordinate(6, 0));
 		return result;
 
 	}
 
 	private List<Coordinate> getBlackCastle() {
 		List<Coordinate> result = new ArrayList<>();
-		result.add(new Coordinate(2,7));
-		result.add(new Coordinate(6,7));
+		result.add(new Coordinate(2, 7));
+		result.add(new Coordinate(6, 7));
 		return result;
 
 	}
